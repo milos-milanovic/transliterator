@@ -7,7 +7,7 @@
     { "src": "img/maskable_icon_192.png", "sizes": "196x196", "type": "image/png", "purpose": "any maskable" }
   ],
   "start_url": "/",
-  "theme_color": "#fafafa",
-  "background_color": "#181818",
+  "theme_color": "#292d2f",
+  "background_color": "#121414",
   "display": "standalone"
 }

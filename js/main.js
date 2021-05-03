@@ -69,11 +69,6 @@ const btnCopy = document.getElementById('btn-copy');
 const btnPaste = document.getElementById('btn-paste');
 const btnDelete = document.getElementById('btn-delete');
 
-// const convertingLoadingFrom = document.getElementById('converting-loading-from');
-// const convertingLoadingTo = document.getElementById('converting-loading-to');
-
-const mainLabel = document.getElementById('main-label');
-
 const themeCb = document.getElementById('theme-cb');
 
 const getConfig = function () {
@@ -82,42 +77,49 @@ const getConfig = function () {
 const setConfig = function (txt) {
   localStorage.setItem('from', txt);
 };
+const getIsDarkTheme = function () {
+  return localStorage.getItem('dark_theme');
+};
+const setDarkTheme = function () {
+  localStorage.setItem('dark_theme', 'true');
+};
+const setLightTheme = function () {
+  localStorage.setItem('dark_theme', 'false');
+};
 
 function scrollDown(element) {
-  if (window.matchMedia('(max-width: 991px)')) {
+  if (window.innerWidth < 991) {
     element.scrollIntoView();
   }
 }
 // END - Helpers and references
 
-//  Theme switch
-const elementsToSwitch = [
-  document.body,
-  fromText,
-  toText,
-  toPar,
-  fromPar,
-  document.getElementById('change'),
-  document.getElementsByTagName('nav')[0],
-  document.getElementsByTagName('footer')[0],
-  document.getElementsByClassName('from-d')[0],
-  document.getElementsByClassName('to-d')[0],
-  document.getElementsByClassName('change-row')[0],
-];
+// Check if supported
+if (!('clipboard' in navigator)) {
+  btnCopy.style.visibility = 'hidden';
+  btnPaste.style.visibility = 'hidden';
+}
 
+// Apply previously selected theme
+if (getIsDarkTheme() === 'true') {
+  document.body.classList.toggle('dark');
+  themeCb.checked = true;
+} else if (getIsDarkTheme === null) {
+  setLightTheme();
+}
+
+//  Theme switch
 themeCb.addEventListener('change', function () {
-  elementsToSwitch.forEach(function (elem) {
-    elem.classList.toggle('dark');
-  });
+  document.body.classList.toggle('dark');
 
   if (document.body.classList.contains('dark')) {
-    logo.src = 'img/nav-img-dark-mode.jpg';
+    setDarkTheme();
   } else {
-    logo.src = 'img/nav-img-light-mode.jpg';
+    setLightTheme();
   }
 });
 
-// Focus from text area
+// Focus `from` text area
 fromText.focus();
 
 // START - Text Area auto expand
@@ -154,7 +156,6 @@ if (!getConfig()) {
 // START - Applying config or default (lat)
 switch (getConfig()) {
   case lat:
-    // NOTE: title and main label not needed to be set. since it is the page default.
     // set from-to paragraphs
     fromPar.innerText = lat;
     toPar.innerText = cyr;
@@ -163,9 +164,6 @@ switch (getConfig()) {
     toText.placeholder = toCyrPh;
     break;
   case cyr:
-    // title and main label
-    document.title = labelCyrToLat;
-    // mainLabel.innerText = labelCyrToLat; // TODO: REVERT
     // set from-to paragraphs
     fromPar.innerText = cyr;
     toPar.innerText = lat;
@@ -201,37 +199,24 @@ fromText.addEventListener('keydown', function (e) {
 // switch script
 document.getElementById('change').addEventListener('click', switchScript);
 function switchScript() {
-  // 'getConfig()' represents current from script
-  let tempFrom;
+  // 'getConfig()' represents current from ``script``
   switch (getConfig()) {
     case lat:
-      document.title = labelCyrToLat;
-      // mainLabel.innerText = labelCyrToLat; // TODO: REVERT
-
       fromPar.innerText = cyr;
       toPar.innerText = lat;
       setConfig(cyr);
       fromText.placeholder = fromCyrPh;
       toText.placeholder = toLatPh;
-      // switch textarea values
-      tempFrom = fromText.value;
-      fromText.value = toText.value;
-      toText.value = tempFrom;
       break;
-    case cyr:
-      document.title = labelLatToCyr;
-      // mainLabel.innerText = labelLatToCyr; // TODO: REVERT
 
+    case cyr:
       fromPar.innerText = lat;
       toPar.innerText = cyr;
       setConfig(lat);
       fromText.placeholder = fromLatPh;
       toText.placeholder = toCyrPh;
-      // switch textarea values
-      tempFrom = fromText.value;
-      fromText.value = toText.value;
-      toText.value = tempFrom;
       break;
+
     default:
       // Purpose: to prevent errors
       // if it comes here then user probably changed the value
@@ -243,10 +228,6 @@ function switchScript() {
 }
 
 function convert() {
-  // display loading indicator -- currently not needed
-  // convertingLoadingFrom.style.display = 'inline-block';
-  // convertingLoadingTo.style.display = 'inline-block';
-
   scrollDown(toText);
 
   if (getConfig() === lat) {
@@ -256,13 +237,12 @@ function convert() {
     // Cyrillic -> Latin
     toText.value = convertCyrToLat(fromText.value);
   }
-  // hide loading indicator -- currently not needed
-  // convertingLoadingFrom.style.display = 'none';
-  // convertingLoadingTo.style.display = 'none';
 }
 
 // START - Copy, paste, delete, convert buttons
-btnConvert.addEventListener('click', convert);
+btnConvert.addEventListener('click', function () {
+  convert();
+});
 
 btnCopy.addEventListener('click', function () {
   navigator.clipboard.writeText(toText.value);
@@ -276,7 +256,7 @@ btnPaste.addEventListener('click', function () {
       autoExpand(fromText);
     })
     .catch(function (s) {
-      alert('Došlo je do greške. Pokušajte da ručno nalepite.');
+      alert('Došlo je do greške. Nalepite ručno.');
     });
 });
 
