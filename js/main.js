@@ -304,6 +304,7 @@ function convertLatToCyr(txt) {
   txt = txt.replace(/v/g, 'в');
   txt = txt.replace(/g/g, 'г');
   txt = txt.replace(/d/g, 'д');
+  txt = txt.replace(/đ/g, 'ђ');
   txt = txt.replace(/e/g, 'е');
   txt = txt.replace(/ž/g, 'ж');
   txt = txt.replace(/z/g, 'з');
@@ -331,6 +332,7 @@ function convertLatToCyr(txt) {
   txt = txt.replace(/V/g, 'В');
   txt = txt.replace(/G/g, 'Г');
   txt = txt.replace(/D/g, 'Д');
+  txt = txt.replace(/Đ/g, 'Ђ');
   txt = txt.replace(/E/g, 'Е');
   txt = txt.replace(/Ž/g, 'Ж');
   txt = txt.replace(/Z/g, 'З');
